@@ -1,0 +1,6 @@
+{
+  "framework": "vite",
+  "rewrites": [
+    { "source": "/api/(.*)", "destination": "https://your-backend-url.herokuapp.com/api/$1" }
+  ]
+}
