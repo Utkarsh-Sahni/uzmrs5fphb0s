@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { fetchAccuracy } from '../api/client';
 import { Card, CardHeader, CardTitle, CardContent } from '../components/ui/Card';
@@ -17,12 +17,30 @@ export const DecisionInsights = ({ date, setDate, cutoff, setCutoff }: DecisionI
   const [editDate, setEditDate] = useState(date);
   const [editCutoff, setEditCutoff] = useState(cutoff);
 
-  const cutoffs = [
-    "2022-09-19T05:00",
-    "2022-09-19T17:00",
-    "2022-09-19T23:00",
-    "2022-09-20T04:00",
-  ];
+  useEffect(() => {
+    setEditDate(date);
+    setEditCutoff(cutoff);
+  }, [date, cutoff]);
+
+  const getDynamicCutoffs = (targetDate: string) => {
+    try {
+      const d = new Date(targetDate);
+      if (isNaN(d.getTime())) return [];
+      const dMinus1 = new Date(d);
+      dMinus1.setDate(d.getDate() - 1);
+      const dateStr = dMinus1.toISOString().split('T')[0];
+      return [
+        `${dateStr}T05:00`,
+        `${dateStr}T17:00`,
+        `${dateStr}T23:00`,
+        `${targetDate}T04:00`,
+      ];
+    } catch (e) {
+      return [];
+    }
+  };
+
+  const cutoffs = getDynamicCutoffs(date);
 
   const { data: results, isLoading, error, isFetching } = useQuery({
     queryKey: ['insights', date],
@@ -73,7 +91,6 @@ export const DecisionInsights = ({ date, setDate, cutoff, setCutoff }: DecisionI
       </div>
 
       <div className="relative min-h-[400px]">
-        {/* Overlay loader for updates */}
         {isFetching && results && (
           <div className="absolute inset-0 z-10 bg-slate-950/40 backdrop-blur-[1px] flex items-center justify-center pointer-events-none">
             <div className="flex items-center gap-3 bg-slate-900 border border-slate-800 px-4 py-2 rounded-full shadow-xl">

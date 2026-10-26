@@ -10,7 +10,7 @@ const queryClient = new QueryClient();
 type View = 'explorer' | 'accuracy' | 'insights';
 
 function App() {
-  // Default date changed to January 2026 as per assignment requirements
+  // Set default date to January 2026 as per requirements
   const [date, setDate] = useState('2026-01-15');
   const [cutoff, setCutoff] = useState('2026-01-14T11:00');
   const [currentView, setCurrentView] = useState<View>('accuracy');

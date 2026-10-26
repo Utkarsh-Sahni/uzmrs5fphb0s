@@ -3,11 +3,9 @@ from fastapi import FastAPI, HTTPException, Query
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from typing import List, Optional, Dict, Any
-from datetime import datetime
+from datetime import datetime, timedelta
 from src.ingestion.elexon_client import ElexonClient
 from src.core.accuracy import AccuracyCalculator, AccuracyMetrics
-
-import os
 
 app = FastAPI(title="GridBrick Accuracy API")
 
@@ -41,9 +39,6 @@ class IntervalError(BaseModel):
     publish_time: Optional[str]
 
 def process_forecast_as_of(forecasts: List[Dict], target_date: str, period: int, decision_cutoff: str):
-    """
-    Finds the best forecast for a specific target period as of a decision cutoff.
-    """
     best_forecast = None
     latest_publish_time = None
     for f in forecasts:
@@ -72,7 +67,13 @@ async def get_accuracy(
 ):
     loop = asyncio.get_event_loop()
     fuel_task = loop.run_in_executor(None, client.fetch_fuel_hh, date, date)
-    start_publish = "2022-01-01T00:00:00"
+    
+    try:
+        cutoff_dt = datetime.fromisoformat(decision_cutoff.replace("Z", "+00:00"))
+        start_publish = (cutoff_dt - timedelta(days=7)).isoformat()
+    except:
+        start_publish = "2022-01-01T00:00:00"
+
     end_publish = decision_cutoff
     wind_task = loop.run_in_executor(None, client.fetch_wind_for, start_publish, end_publish)
     fuel_data, wind_forecasts = await asyncio.gather(fuel_task, wind_task)
@@ -138,7 +139,13 @@ async def get_interval_errors(
 ):
     loop = asyncio.get_event_loop()
     fuel_task = loop.run_in_executor(None, client.fetch_fuel_hh, date, date)
-    start_publish = "2022-01-01T00:00:00"
+    
+    try:
+        cutoff_dt = datetime.fromisoformat(decision_cutoff.replace("Z", "+00:00"))
+        start_publish = (cutoff_dt - timedelta(days=7)).isoformat()
+    except:
+        start_publish = "2022-01-01T00:00:00"
+        
     end_publish = decision_cutoff
     wind_task = loop.run_in_executor(None, client.fetch_wind_for, start_publish, end_publish)
     fuel_data, wind_forecasts = await asyncio.gather(fuel_task, wind_task)
