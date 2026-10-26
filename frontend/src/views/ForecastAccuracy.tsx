@@ -125,22 +125,22 @@ export const ForecastAccuracy = ({ date, setDate, cutoff, setCutoff }: ForecastA
                       <thead className="text-slate-400 border-b border-slate-800">
                         <tr>
                           <th className="pb-3 font-medium">Period</th>
+                          <th className="pb-3 font-medium">Forecast Time</th>
                           <th className="pb-3 font-medium">Actual (MW)</th>
                           <th className="pb-3 font-medium">Forecast (MW)</th>
                           <th className="pb-3 font-medium">Error (MW)</th>
-                          <th className="pb-3 font-medium">Published At</th>
                         </tr>
                       </thead>
                       <tbody className="divide-y divide-slate-800">
                         {intervals?.map((row: any) => (
                           <tr key={row.period} className="group hover:bg-slate-800/50 transition-colors">
                             <td className="py-3 font-medium text-slate-300">{row.period}</td>
+                            <td className="py-3 text-slate-400">{row.target_time}</td>
                             <td className="py-3 text-slate-400">{row.actual ?? 'N/A'}</td>
                             <td className="py-3 text-slate-400">{row.forecast ?? 'N/A'}</td>
                             <td className={`py-3 font-medium ${row.error > 0 ? 'text-emerald-400' : row.error < 0 ? 'text-rose-400' : 'text-slate-400'}`}>
                               {row.error?.toFixed(1) ?? 'N/A'}
                             </td>
-                            <td className="py-3 text-xs text-slate-500">{row.publish_time ?? 'N/A'}</td>
                           </tr>
                         ))}
                       </tbody>

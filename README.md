@@ -48,7 +48,7 @@ npm run dev
 ## 📊 API Endpoints
 - `GET /health`: System health check.
 - `GET /accuracy`: Returns aggregated accuracy metrics for a target date and decision cutoff.
-- `GET /accuracy/intervals`: Returns a detailed half-hourly error breakdown.
+- `GET /accuracy/intervals`: Returns a detailed hourly error breakdown.
 
 ## 🔍 Verification & Testing
 - **Unit Tests**: Run `pytest tests/` to verify accuracy calculations and API logic.
@@ -57,4 +57,3 @@ npm run dev
 
 ## 🤖 AI Disclosure
 This project was developed with the assistance of AI tools (Claude) for rapid prototyping, boilerplate generation, and technical auditing.
-

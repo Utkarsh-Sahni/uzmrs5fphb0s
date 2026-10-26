@@ -85,13 +85,21 @@ export const ForecastExplorer = ({ date, setDate, cutoff, setCutoff }: ForecastE
                 <ResponsiveContainer width="100%" height="100%">
                   <LineChart data={intervals}>
                     <CartesianGrid strokeDasharray="3 3" stroke="#1e293b" />
-                    <XAxis 
-                      dataKey="period" 
-                      stroke="#94a3b8" 
-                      fontSize={12} 
-                      tickLine={false} 
-                      axisLine={false} 
-                      label={{ value: 'Settlement Period', position: 'insideBottom', offset: -5, fill: '#94a3b8', fontSize: 12 }}
+                    <XAxis
+                      dataKey="target_time"
+                      stroke="#94a3b8"
+                      fontSize={10}
+                      tickLine={false}
+                      axisLine={false}
+                      tickFormatter={(val) => {
+                        if (!val) return '';
+                        // val is "YYYY-MM-DD HH:00"
+                        const parts = val.split(' ');
+                        if (parts.length < 2) return val;
+                        // Return "HH:00" for clarity, as it's for a single day.
+                        return parts[1];
+                      }}
+                      label={{ value: 'Time (UTC)', position: 'insideBottom', offset: -5, fill: '#94a3b8', fontSize: 12 }}
                     />
                     <YAxis 
                       stroke="#94a3b8" 

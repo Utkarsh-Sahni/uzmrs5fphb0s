@@ -36,18 +36,45 @@ class Database:
 
     def get_forecast_as_of(self, target_date: str, target_period: int, decision_time: str):
         """
-        Returns the latest forecast for a target interval that was published 
-        before or at the decision_time.
+        Returns the latest forecast for a target interval that was published
+        before or at the decision_time, and is not retrospective.
         """
         with sqlite3.connect(self.db_path) as conn:
+            # target_period is assumed to be 1-24 (hourly)
+            # We need to check if it's retrospective.
+            # Since we don't have the target_timestamp in the table,
+            # we can calculate it or join if we had a mapping.
+            # However, the table 'wind_for' has target_date and target_period.
+
+            # To handle the retrospective check (startTime < publishTime),
+            # we need the actual target timestamp.
+            # Assuming target_period 1 = 00:00-01:00, etc.
+
             cursor = conn.execute(
                 """
-                SELECT forecast_value_mw, forecast_publish_date_time 
-                FROM wind_for 
+                SELECT forecast_value_mw, forecast_publish_date_time
+                FROM wind_for
                 WHERE target_date = ? AND target_period = ? AND forecast_publish_date_time <= ?
-                ORDER BY forecast_publish_date_time DESC 
-                LIMIT 1
+                ORDER BY forecast_publish_date_time DESC
+                LIMIT 100
                 """,
                 (target_date, target_period, decision_time)
             )
-            return cursor.fetchone()
+            rows = cursor.fetchall()
+
+            # Filter retrospective in Python because the timestamp calculation
+            # is easier there than in SQLite (which has limited date math).
+            for row in rows:
+                val, publish_time_str = row
+                publish_time = datetime.fromisoformat(publish_time_str.replace("Z", "+00:00"))
+
+                # Calculate target timestamp
+                # target_date is 'YYYY-MM-DD'
+                # target_period is 1-24
+                target_dt = datetime.strptime(target_date, "%Y-%m-%d").replace(tzinfo=publish_time.tzinfo)
+                target_dt += timedelta(hours=target_period - 1)
+
+                if target_dt >= publish_time:
+                    return (val, publish_time_str)
+
+            return None
