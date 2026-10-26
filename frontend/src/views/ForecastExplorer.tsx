@@ -30,7 +30,6 @@ export const ForecastExplorer = ({ date, setDate, cutoff, setCutoff }: ForecastE
 
   return (
     <div className="space-y-8 p-6 relative">
-      {/* 1. Date Pickers (Always Visible) */}
       <div className="flex flex-col md:flex-row gap-4 items-end">
         <div className="space-y-2">
           <label className="text-xs font-medium text-slate-400 uppercase">Target Date</label>
@@ -56,8 +55,8 @@ export const ForecastExplorer = ({ date, setDate, cutoff, setCutoff }: ForecastE
 
       <div className="relative min-h-[400px]">
         {/* Overlay loader for updates */}
-        {isFetching && (
-          <div className="absolute inset-0 z-10 bg-slate-950/40 backdrop-blur-[1px] flex items-center justify-center">
+        {isFetching && intervals && (
+          <div className="absolute inset-0 z-10 bg-slate-950/40 backdrop-blur-[1px] flex items-center justify-center pointer-events-none">
             <div className="flex items-center gap-3 bg-slate-900 border border-slate-800 px-4 py-2 rounded-full shadow-xl">
               <Loader2 className="w-4 h-4 text-brand-500 animate-spin" />
               <span className="text-sm text-slate-300 font-medium">Updating profile...</span>

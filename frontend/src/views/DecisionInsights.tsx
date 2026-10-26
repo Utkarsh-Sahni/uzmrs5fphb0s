@@ -49,7 +49,6 @@ export const DecisionInsights = ({ date, setDate, cutoff, setCutoff }: DecisionI
 
   return (
     <div className="space-y-8 p-6 relative">
-      {/* 1. Date Pickers (Always Visible) */}
       <div className="flex flex-col md:flex-row gap-4 items-end">
         <div className="space-y-2">
           <label className="text-xs font-medium text-slate-400 uppercase">Target Date</label>
@@ -75,8 +74,8 @@ export const DecisionInsights = ({ date, setDate, cutoff, setCutoff }: DecisionI
 
       <div className="relative min-h-[400px]">
         {/* Overlay loader for updates */}
-        {isFetching && (
-          <div className="absolute inset-0 z-10 bg-slate-950/40 backdrop-blur-[1px] flex items-center justify-center">
+        {isFetching && results && (
+          <div className="absolute inset-0 z-10 bg-slate-950/40 backdrop-blur-[1px] flex items-center justify-center pointer-events-none">
             <div className="flex items-center gap-3 bg-slate-900 border border-slate-800 px-4 py-2 rounded-full shadow-xl">
               <Loader2 className="w-4 h-4 text-brand-500 animate-spin" />
               <span className="text-sm text-slate-300 font-medium">Calculating Convergence...</span>
@@ -131,7 +130,7 @@ export const DecisionInsights = ({ date, setDate, cutoff, setCutoff }: DecisionI
               <Card>
                 <CardHeader><CardTitle>System Behavior</CardTitle></CardHeader>
                 <CardContent className="text-sm text-slate-400 leading-relaxed">
-                  The "As-Of" selection logic ensures that for any given cutoff, only information available at that 
+                  The "As-Of" selection logic ensures that only information available at that 
                   precise moment is used. This mimics the real-world constraint of a procurement analyst making 
                   purchasing decisions on the day-ahead market.
                 </CardContent>

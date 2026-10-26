@@ -10,9 +10,9 @@ const queryClient = new QueryClient();
 type View = 'explorer' | 'accuracy' | 'insights';
 
 function App() {
-  // Lift the state up to the App level so it persists across tab changes
-  const [date, setDate] = useState('2022-09-20');
-  const [cutoff, setCutoff] = useState('2022-09-19T11:00');
+  // Default date changed to January 2026 as per assignment requirements
+  const [date, setDate] = useState('2026-01-15');
+  const [cutoff, setCutoff] = useState('2026-01-14T11:00');
   const [currentView, setCurrentView] = useState<View>('accuracy');
 
   const navItems = [

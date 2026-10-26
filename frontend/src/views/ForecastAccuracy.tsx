@@ -63,21 +63,14 @@ export const ForecastAccuracy = ({ date, setDate, cutoff, setCutoff }: ForecastA
       </div>
 
       <div className="relative min-h-[600px]">
-        {fetchingMetrics && (
-          <div className="absolute inset-0 z-10 bg-slate-950/40 backdrop-blur-[1px] flex items-center justify-center">
-            <div className="flex items-center gap-3 bg-slate-900 border border-slate-800 px-4 py-2 rounded-full shadow-xl">
-              <Loader2 className="w-4 h-4 text-brand-500 animate-spin" />
-              <span className="text-sm text-slate-300 font-medium">Updating data...</span>
-            </div>
-          </div>
-        )}
-
+        {/* 1. Initial Load: Full screen loader (Priority 1) */}
         {loadingMetrics || loadingIntervals ? (
           <div className="flex flex-col items-center justify-center h-[600px] text-center">
             <Loader2 className="w-12 h-12 text-brand-500 animate-spin mb-4" />
             <p className="text-slate-400">Analyzing historical forecasts...</p>
           </div>
         ) : errorMetrics || errorIntervals ? (
+          /* 2. Error State (Priority 2) */
           <div className="flex flex-col items-center justify-center h-[600px] text-center">
             <AlertCircle className="w-12 h-12 text-rose-500 mb-4" />
             <h3 className="text-xl font-semibold text-slate-100">No Data Found</h3>
@@ -86,12 +79,39 @@ export const ForecastAccuracy = ({ date, setDate, cutoff, setCutoff }: ForecastA
             </p>
           </div>
         ) : metrics ? (
+          /* 3. Data View (Priority 3) */
           <div className="space-y-8">
+            {/* Background update loader: only shown when we already have data and are refetching */}
+            {fetchingMetrics && (
+              <div className="absolute inset-0 z-10 bg-slate-950/40 backdrop-blur-[1px] flex items-center justify-center pointer-events-none">
+                <div className="flex items-center gap-3 bg-slate-900 border border-slate-800 px-4 py-2 rounded-full shadow-xl">
+                  <Loader2 className="w-4 h-4 text-brand-500 animate-spin" />
+                  <span className="text-sm text-slate-300 font-medium">Updating data...</span>
+                </div>
+              </div>
+            )}
+
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-              <MetricCard label="MAE" value={`${metrics.mae.toFixed(2)} MW`} description="Mean Absolute Error" />
-              <MetricCard label="RMSE" value={`${metrics.rmse.toFixed(2)} MW`} description="Root Mean Square Error" />
-              <MetricCard label="Bias" value={`${metrics.bias.toFixed(2)} MW`} description="Average Forecast Error" />
-              <MetricCard label="WAPE" value={`${(metrics.wape * 100).toFixed(2)}%`} description="Weighted Absolute % Error" />
+              <MetricCard
+                label="MAE"
+                value={`${metrics.mae.toFixed(2)} MW`}
+                description="Mean Absolute Error: The average magnitude of the errors. Tells you the typical 'miss' distance regardless of direction."
+              />
+              <MetricCard
+                label="RMSE"
+                value={`${metrics.rmse.toFixed(2)} MW`}
+                description="Root Mean Square Error: Penalizes larger errors more heavily. A high RMSE compared to MAE indicates a few very large misses."
+              />
+              <MetricCard
+                label="Bias"
+                value={`${metrics.bias.toFixed(2)} MW`}
+                description="Forecast Bias: Average error. Negative values mean the forecast is consistently too high (over-forecasting), positive means too low."
+              />
+              <MetricCard
+                label="WAPE"
+                value={`${(metrics.wape * 100).toFixed(2)}%`}
+                description="Weighted Absolute Percentage Error: Normalizes error relative to total generation. Best for comparing accuracy across different days."
+              />
             </div>
 
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
